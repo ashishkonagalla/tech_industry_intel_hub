@@ -6,6 +6,26 @@ from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.backends import default_backend
 import snowflake.connector
 
+
+
+# --- Snowflake Connection ---
+@st.cache_resource
+def connect_to_snowflake():
+    return snowflake.connector.connect(
+        user=st.secrets["SNOWFLAKE_USER"],
+        password=st.secrets["SNOWFLAKE_PASSWORD"],
+        account=st.secrets["SNOWFLAKE_ACCOUNT"],
+        warehouse=st.secrets["SNOWFLAKE_WAREHOUSE"],
+        database=st.secrets["SNOWFLAKE_DATABASE"],
+        schema=st.secrets["SNOWFLAKE_SCHEMA"],
+        role=st.secrets["SNOWFLAKE_ROLE"]
+    )
+
+conn = connect_to_snowflake()
+
+
+
+'''
 # --- Snowflake Connection ---
 @st.cache_resource
 def connect_to_snowflake():
@@ -33,6 +53,8 @@ def connect_to_snowflake():
     )
 
 conn = connect_to_snowflake()
+'''
+
 
 # --- Data Fetching ---
 @st.cache_data(ttl=300)
