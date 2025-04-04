@@ -5,15 +5,34 @@ import ast
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.backends import default_backend
 import snowflake.connector
+import base64
 
 
 
 # --- Snowflake Connection ---
 @st.cache_resource
 def connect_to_snowflake():
+    # Decode base64-encoded private key from secrets
+    private_key_b64 = st.secrets["SNOWFLAKE_PRIVATE_KEY"]
+    private_key_der = base64.b64decode(private_key_b64)
+
+    # Load the private key in DER format
+    private_key = serialization.load_der_private_key(
+        private_key_der,
+        password=None,
+        backend=default_backend()
+    )
+
+    # Convert to the format expected by Snowflake connector
+    private_key_bytes = private_key.private_bytes(
+        encoding=serialization.Encoding.DER,
+        format=serialization.PrivateFormat.PKCS8,
+        encryption_algorithm=serialization.NoEncryption()
+    )
+
     return snowflake.connector.connect(
         user=st.secrets["SNOWFLAKE_USER"],
-        password=st.secrets["SNOWFLAKE_PASSWORD"],
+        private_key=private_key_bytes,
         account=st.secrets["SNOWFLAKE_ACCOUNT"],
         warehouse=st.secrets["SNOWFLAKE_WAREHOUSE"],
         database=st.secrets["SNOWFLAKE_DATABASE"],
@@ -22,8 +41,6 @@ def connect_to_snowflake():
     )
 
 conn = connect_to_snowflake()
-
-
 
 '''
 # --- Snowflake Connection ---
