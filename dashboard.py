@@ -42,36 +42,6 @@ def connect_to_snowflake():
 
 conn = connect_to_snowflake()
 
-'''
-# --- Snowflake Connection ---
-@st.cache_resource
-def connect_to_snowflake():
-    with open("/home/ashishunix/snowflake_keys/rsa_key_pkcs8.pem", "rb") as key_file:
-        private_key = serialization.load_pem_private_key(
-            key_file.read(),
-            password=None,
-            backend=default_backend()
-        )
-
-    private_key_bytes = private_key.private_bytes(
-        encoding=serialization.Encoding.DER,
-        format=serialization.PrivateFormat.PKCS8,
-        encryption_algorithm=serialization.NoEncryption()
-    )
-
-    return snowflake.connector.connect(
-        user='SNOWASHISH',
-        account='vdelgvk-yob19107',
-        private_key=private_key_bytes,
-        warehouse='TECH_WH',
-        database='TECH_INTEL_DB',
-        schema='PUBLIC',
-        role='ACCOUNTADMIN'
-    )
-
-conn = connect_to_snowflake()
-'''
-
 
 # --- Data Fetching ---
 @st.cache_data(ttl=300)
